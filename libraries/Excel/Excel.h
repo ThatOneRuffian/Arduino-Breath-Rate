@@ -1,3 +1,14 @@
+/*
+    Purpose: Allows the Arduino to interface with the PLX-DAQ plug-in for excel.
+
+    @author Marcus Mesta
+*/
+
+
+
+
+
+
 #ifndef EXCEL
 #define EXCEL
 
