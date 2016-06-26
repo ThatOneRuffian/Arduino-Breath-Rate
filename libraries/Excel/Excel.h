@@ -4,11 +4,6 @@
     @author Marcus Mesta
 */
 
-
-
-
-
-
 #ifndef EXCEL
 #define EXCEL
 
@@ -22,7 +17,6 @@ extern String RowWrite;
 
 class Excel
 {
-
 
        public:
 
@@ -46,6 +40,7 @@ class Excel
        private:
             static bool RowWrite;
             static bool Flag;
+            static bool InvalidInputFlag;
             static int UserLength; //default length for number of Data sources eg. sensors
             static int UserInput;
             static const unsigned int MaxMSGLength;  //Max number of message characters allowed on PLX-DAQ

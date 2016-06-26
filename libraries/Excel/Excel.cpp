@@ -15,6 +15,7 @@ int  Excel::UserInput;
 
 bool Excel::RowWrite = false;       //holds RowWrite status
 bool Excel::Flag = false;           //flag for table clear
+bool Excel::InvalidInputFlag = false;
 
 String Excel::Labels[DataLength];  // Create label array with width of the max number of displayable values.
 
@@ -24,21 +25,25 @@ Excel::Excel(int UserVal){ //Constructor for class. User input determines the am
 
 this ->UserInput = UserVal;
 
-if (UserInput > this->DataLength)    // Check to see if user's input is within bounds of the excel plug-in's requirements
-{
-    this->PostMSG(InvalidData);   //Post error
-}
 
-else
+if ((this->UserInput >= 0) && (this->UserInput <= this-> DataLength) )
 {
   this -> UserLength = UserInput; //   // If value entered is within range update the class variable.
 }
+
+else if (this -> UserInput > this->DataLength)    // Check to see if user's input is within bounds of the excel plug-in's requirements
+{
+    this -> InvalidInputFlag = true;
+    this -> PostMSG(InvalidData);   //Post error
+
+}
+
 
 }
 
 void Excel::EnableRowWrite(void){
     this -> RowWrite = true;
-} //Enablee writing to a singular row
+} //Enable writing to a singular row
 
 void Excel::DisableRowWrite(void){
     this -> RowWrite = false;
@@ -77,7 +82,7 @@ void Excel::ClearLabels(void){
 }
 
 void Excel::PushData(void){  //Pushes data stored in Data array to Excel
-
+if (!InvalidInputFlag){
         int i = 0;
         int z = 1;
 
@@ -103,11 +108,12 @@ void Excel::PushData(void){  //Pushes data stored in Data array to Excel
         }
 
         Serial.println(); //Ends message with a carriage return
-
+}
 }
 
 void Excel::PushLabels(void){
 
+if (!InvalidInputFlag){
         int i = 0;
         int z = 1;
 
@@ -140,6 +146,7 @@ void Excel::PushLabels(void){
 
         Serial.print("\r\n");
         this -> Flag = false;
+}
 }
 
 void Excel::ClearData(void){//Clears data in excel sheet
