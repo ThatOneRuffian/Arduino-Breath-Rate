@@ -11,11 +11,11 @@ void setup() {
 
   delay(10);                          //Wait for serial communications to initialize
   
-   myObject.ClearData();              // Clear Excel sheet on reboot.
-   myObject.ClearLabels();           //Clear old labels from excel document
+   myObject.ClearData();              //Clear Excel sheet on reboot
+   myObject.ClearLabels();            //Clear old labels from excel document
    
    myObject.Labels[0] = "Hi";        //Sample setup of table enteries in an object. Notice enteries are zero indexed.
-   myObject.Labels[1] = "There";     //
+   myObject.Labels[1] = "There";     
    myObject.PushLabels();            // Update table labels in Excel 
    
    myObject.EnableRowWrite();        //Enable singular row writing
@@ -25,8 +25,6 @@ void setup() {
 
 void loop()    //Begin Arduino loop
 {
-
-
 
 double i = 0;  // Created to increment value passed to sin and cos.
 
