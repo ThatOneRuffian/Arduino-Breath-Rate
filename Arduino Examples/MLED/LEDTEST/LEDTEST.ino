@@ -17,7 +17,6 @@ myLED.SetBrightness(LEDBrightness); // set to ~ half power. 255 is max. Must be 
 
 void loop() { //Test all colors of the LED. Colors much be cleared before applying another color.
 
-  
 myLED.Red();
 delay(delayTime);
 
@@ -44,7 +43,6 @@ delay(delayTime);
 
 myLED.White();
 delay(delayTime);
-
 
 
 }

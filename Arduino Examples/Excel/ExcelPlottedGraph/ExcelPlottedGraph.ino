@@ -18,8 +18,6 @@ void setup() {
    myObject.Labels[1] = "There";     
    myObject.PushLabels();            // Update table labels in Excel 
    
-   //myObject.EnableRowWrite();        //Enable singular row writing
-
 
 }
 
