@@ -15,11 +15,7 @@ class MLED{
 
        public:
 
-            MLED(int, int, int, int);     // Constructor for the object. Determines which pins are connected to which LED
-
-            void SetBrightness(int); //Sets the brightness of the LED from 0 - 255
-            void ClearColors(void);
-
+            MLED(int&, int&, int&, int&);     // Constructor for the object. Determines which pins are connected to which LED
 
             /*******Colors*******/
             void Purple(void);
@@ -30,12 +26,20 @@ class MLED{
             void Blue(void);
             void Red(void);
 
+            /*********Color - Functions*********/
+            void ClearColors(void);
+
+
+            /*********Misc - Functions*********/
+            void SetBrightness(int&); //Sets the brightness of the LED from 0 - 255
+            void Fade(double&);
+
        private:
 
             static int RED;      //Holds reserved pin numbers
             static int BLUE;
             static int GREEN;
-            static int BRIGHTNESS;
+            static int ENABLE;
 
 };
 
