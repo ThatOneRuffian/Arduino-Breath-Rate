@@ -5,7 +5,8 @@
 */
 
 #include "MLED.h"
-int MLED::RED, MLED::BLUE, MLED::GREEN, MLED::ENABLE;
+int MLED::RED, MLED::BLUE, MLED::GREEN, MLED::ENABLE, MLED::UserBrightness = 255;
+
 
 MLED::MLED(int& Red, int& Blue, int& Green, int& Enable){
 
@@ -27,15 +28,58 @@ digitalWrite(GREEN, HIGH);
 
 }
 
-void MLED::SetBrightness(int& Val){
+void MLED::Fade(double fadeTime, int fadeCycles){
+  const int MaxRes = 255; //Max resolution on the PWM pin.
+  const int delayTime = 1;    //delay 1 ms every loop
+  int tempEnable = this -> ENABLE;
+  double HalfTime = fadeTime/2.0;  // Time to reach peak of the user's input.
+
+  double fadeamount = MaxRes/HalfTime;
+
+
+  while( fadeCycles > 0 )
+  {
+
+
+
+   for ( double CurrentPWM = 255; CurrentPWM > 0; CurrentPWM -= fadeamount)
+
+    {
+         analogWrite(tempEnable, CurrentPWM);
+         delay(delayTime);
+    }
+
+        for ( double CurrentPWM = 0; CurrentPWM < 255; CurrentPWM += fadeamount)
+    {
+
+      analogWrite(tempEnable, CurrentPWM);
+      delay(delayTime);
+    }
+
+
+    fadeCycles = fadeCycles -1;
+
+
+}
+
+   analogWrite(this ->ENABLE, this -> UserBrightness);
+
+}
+
+void MLED::SetBrightness(int& Val){  //Not compatible with fade function.
+
+
 
 if(Val >= 0 && Val <= 255)
-{ analogWrite( this -> ENABLE, Val);}
+{
+    this -> UserBrightness = Val;
+    analogWrite( this -> ENABLE,  this -> UserBrightness);}
 
 }
 
 void MLED::Purple(void){
    this -> ClearColors();
+
    digitalWrite(this -> BLUE, LOW);
    digitalWrite(this -> RED, LOW);
 }
@@ -72,29 +116,6 @@ void MLED::Blue(void){
 void MLED::Red(void){
   this -> ClearColors();
   digitalWrite(this -> RED, LOW);
-}
-
-void MLED::Fade(double& FadeCycleTime)
-{
-    /*
-    const double MaxVal = 255; //Max PWM speed for arduino.
-
-    double i; // while loop to delay fade
-
-    if (FadeCycleTime > 0)
-    {
-        const double PeakTime = (FadeCycleTime/2.0); //time required to reach MaxVal
-
-
-        while()
-        {
-
-       SetBrightness(i);
-        delay()
-        }
-    }
-*/
-
 }
 
 void MLED::ClearColors(void){

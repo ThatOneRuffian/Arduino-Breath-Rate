@@ -46,8 +46,6 @@ class Excel
             static const unsigned int MaxMSGLength;  //Max number of message characters allowed on PLX-DAQ
             static const unsigned int DataLength;    //Max number of data that may be sent.
 
-
-
 };
 
 
