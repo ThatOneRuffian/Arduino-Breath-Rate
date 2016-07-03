@@ -1,18 +1,19 @@
 #include <Excel.h>
 #include <BreathModule.h>
-//#include <math.H>
+
 
 
 int RVpin = A1;
 int TMPpin = A2;
 int OUTpin = A3;
+int EnablePin = 7;
 
 
 int SensorCount = 1;   // Number of sensors to setup Excel object
 int BaudRate = 19200; // Max communication speed 
 
-Excel myObject(SensorCount); //Create Object for interacting with Excel plug-in
-WindMod myModule(RVpin,TMPpin, OUTpin);
+Excel myExcelObject(SensorCount); //Create Object for interacting with Excel plug-in
+WindMod myModule(RVpin,TMPpin, OUTpin, EnablePin);
 
 
 void setup() {
@@ -21,21 +22,25 @@ void setup() {
      
      delay(10);  
 
-      myObject.Labels[0] = "Sense"; 
+     myModule.EnableMod();
+
+      myExcelObject.Labels[0] = "Sense"; 
       
-      myObject.PushLabels(); 
+      myExcelObject.PushLabels(); 
      
-      myObject.EnableRowWrite();
+      myExcelObject.EnableRowWrite();
 
 }
 
 void loop(){
 
+
+
 //myObject.Data[0] = myModule.getCurrentMPH();
 
-myObject.Data[0] = myModule.getTempF();
+//myExcelObject.Data[0] = analogRead(OUTpin);//myModule.getTempF();
 
-myObject.PushData();
+myExcelObject.PushData();
 
 }
 
