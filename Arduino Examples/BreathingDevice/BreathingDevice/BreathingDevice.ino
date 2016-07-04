@@ -8,8 +8,7 @@ int TMPpin = A2;
 int OUTpin = A3;
 int EnablePin = 7;
 
-
-int SensorCount = 1;   // Number of sensors to setup Excel object
+int SensorCount = 2;   // Number of sensors to setup Excel object
 int BaudRate = 19200; // Max communication speed 
 
 Excel myExcelObject(SensorCount); //Create Object for interacting with Excel plug-in
@@ -34,11 +33,8 @@ void setup() {
 
 void loop(){
 
+myExcelObject.Data[0] = myModule.getCurrentMPH();
 
-
-//myObject.Data[0] = myModule.getCurrentMPH();
-
-//myExcelObject.Data[0] = analogRead(OUTpin);//myModule.getTempF();
 
 myExcelObject.PushData();
 

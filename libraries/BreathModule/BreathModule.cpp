@@ -5,7 +5,8 @@ int WindMod::RV,
     WindMod::OUT,
     WindMod::Enable;
 
-double WindMod::defaultFadeTime = 1000.0; // 500 ms wait time
+double WindMod::defaultFadeTime = 1000.0,
+       WindMod::lowThreshold;//Default fade time.
 
 WindMod::WindMod(int _rv, int _tmp, int _out, int EnablePin){
 
@@ -73,6 +74,44 @@ return  (this -> getTempC()* 9.0/5.0) + 32;
 
 }
 
+double WindMod::getStandardDev(){
+
+int BufferArraySize = 100; //100 samples to calculate standard deviation. Or a proper threshold for triggering.
+int DelayPerSample = 40; //wait  ms per sample to get good range of values. should take about 4 seconds.
+double DataBuffer[BufferArraySize];
+
+double mean = 0.0;
+double sumDeviation = 0.0;
+
+for (int i = 0; i < BufferArraySize; i++)
+
+{
+    DataBuffer[i] = this -> getCurrentMPH();
+    delay(BufferArraySize);
+}
+
+
+for (int i = BufferArraySize; i > 0; i--)
+
+{
+    mean += DataBuffer[i];
+}
+
+mean = mean/BufferArraySize;
+
+
+for (int z = 0; z < BufferArraySize; z++)
+{
+    sumDeviation +=(DataBuffer[z] - mean) * (DataBuffer[z] - mean);
+}
+
+return sqrt(sumDeviation/BufferArraySize);
+
+
+
+
+}
+
 void WindMod::calibrate(MLED& LEDobject){
 
 noInterrupts();          //disable Arduino interrupts
@@ -85,15 +124,15 @@ int analogData = 0;
 
 int dummyRead = 2000;  //compares to ready value to ensure device pin has been read enough to read correct value
 
-LEDobject.Red();                   //Change LED to red color.
+LEDobject.Red();      //Change LED to red color.
 
 this -> DisableMod();  // Turn off module
 
-delay(delayTime);   // wait for module to power down
+delay(delayTime);       // wait for module to power down
 
-this -> EnableMod(); // Turn mod back on.
+this -> EnableMod();    // Turn mod back on.
 
-delay(delayTime);   // wait for spike on output pin.
+delay(delayTime);       // wait for spike on output pin.
 
 analogData = analogRead(this -> OUT); //read analog value.
 
@@ -105,9 +144,9 @@ analogData = analogRead(this -> OUT);  //refresh value
 
 }
 
-interrupts(); // Enable Interrupts
+interrupts();         // Enable Interrupts
 
-LEDobject.Yellow();
+LEDobject.Yellow();   //Change LED to a solid yellow color
 
 while(dummyRead > 0) //bleed sensor to get it ready
 {
@@ -116,6 +155,9 @@ while(dummyRead > 0) //bleed sensor to get it ready
        dummyRead --;
 }
 
+LEDobject.Purple();    //set LED purple until the calculation for the module has been completed
+
+this -> lowThreshold = (this -> getStandardDev())*5;  // sets lower threshold 5 standard deviations away from base reading.
 
 LEDobject.Green();
 delay(delayTime);
