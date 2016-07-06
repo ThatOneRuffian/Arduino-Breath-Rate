@@ -14,14 +14,14 @@ class WindMod{
         static int TMP;
         static int Enable;
 
-        static double DataBuffer[];
-
         WindMod(int, int, int, int);
 
         /*******kool Kid Functions******/
         double getCurrentKPH(void);
 
         double getCurrentMPH(void);
+
+        double getCurrentMS(void);
 
         double getTempC(void);
 
@@ -36,12 +36,13 @@ class WindMod{
 
         void calibrate(MLED&);
 
+        void sampleBreathRate(MLED&);
 
-    private:
+
 
         static double defaultFadeTime;
         static double lowThreshold;
-        bool TempGood(void);
+        static double DataBuffer[];
 
 
 

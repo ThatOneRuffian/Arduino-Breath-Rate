@@ -1,12 +1,17 @@
 #include "BreathModule.h"
 
+#define sampleRate 10    // samples per second
+#define samepleWindow 10  //period of ten seconds
+#define sampleTotal sampleRate*samepleWindow
+
 int WindMod::RV,
     WindMod::TMP,
     WindMod::OUT,
     WindMod::Enable;
 
-double WindMod::defaultFadeTime = 1000.0,
-       WindMod::lowThreshold;//Default fade time.
+double WindMod::defaultFadeTime = 1000.0,    //MLED libraries used.
+       WindMod::DataBuffer[sampleTotal],
+       WindMod::lowThreshold;  // This value is set during the calibration function.
 
 WindMod::WindMod(int _rv, int _tmp, int _out, int EnablePin){
 
@@ -28,6 +33,11 @@ double WindMod::getCurrentKPH(){
 
 return this -> getCurrentMPH()*1.60934;
 
+}
+
+double WindMod::getCurrentMS(){
+double KMperMS = 0.27777;
+return (this -> getCurrentKPH()*KMperMS);
 }
 
 double WindMod::getCurrentMPH(){
@@ -86,7 +96,7 @@ double sumDeviation = 0.0;
 for (int i = 0; i < BufferArraySize; i++)
 
 {
-    DataBuffer[i] = this -> getCurrentMPH();
+    DataBuffer[i] = this -> getCurrentMS();
     delay(BufferArraySize);
 }
 
@@ -114,14 +124,16 @@ return sqrt(sumDeviation/BufferArraySize);
 
 void WindMod::calibrate(MLED& LEDobject){
 
+int standardDevs = 2; //threshold set to be x times the standard deviation taken from calibration
 noInterrupts();          //disable Arduino interrupts
 
 const int delayTime = 200; // delay two seconds after disabling mod to turn back on.
 const int analogThresholdLow = 100; // threshold for warm up OK ~0.3v
 const int analogThresholdHIGH = 600; // High threshold for unit ~2v
 const int analogThresholdSuperLow = 100;
+const double ReadToAvg = 100;
 int analogData = 0;
-
+double AverageReadValue = 0;
 int dummyRead = 2000;  //compares to ready value to ensure device pin has been read enough to read correct value
 
 LEDobject.Red();      //Change LED to red color.
@@ -157,11 +169,46 @@ while(dummyRead > 0) //bleed sensor to get it ready
 
 LEDobject.Purple();    //set LED purple until the calculation for the module has been completed
 
-this -> lowThreshold = (this -> getStandardDev())*5;  // sets lower threshold 5 standard deviations away from base reading.
+for(int z = 0; z < ReadToAvg; z++)
+{
+ AverageReadValue += this -> getCurrentMS();
+
+}//find average of the read values.
+AverageReadValue /= ReadToAvg;
+
+this -> lowThreshold  = ((this -> getStandardDev())*standardDevs) + AverageReadValue;  // sets lower threshold 5 standard deviations away from base reading.
 
 LEDobject.Green();
 delay(delayTime);
 LEDobject.ClearColors(); // Clear red LED
+}
+
+void WindMod::sampleBreathRate(MLED& LEDobject){
+/*
+LEDobject.White();  //Change the color of the LED
+
+int Rate = sampleRate;
+int WindowSize = samepleWindow;
+int ArraySize = sampleTotal;
+int Peaks = 0;
+int i = 0;
+
+
+LEDobject.Fade(defaultFadeTime, 3);
+      while(i < ArraySize){
+
+      this -> DataBuffer[i] = this -> getCurrentMPH();
+
+      delay(sampleRate);
+      i++;
+    }
+
+          for(int z = 0; z < sampleTotal; z++)
+          {
+                    if( )
+                this -> lowThreshold; //need something here to count the times the data crosses the threshold
+
+          }*/
 }
 
 void WindMod::EnableMod(){
