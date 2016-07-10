@@ -158,7 +158,7 @@ analogData = analogRead(this -> OUT);  //refresh value
 
 interrupts();         // Enable Interrupts
 
-LEDobject.Yellow();   //Change LED to a solid yellow color
+LEDobject.Red();   //Change LED to a solid yellow color
 
 while(dummyRead > 0) //bleed sensor to get it ready
 {
@@ -167,7 +167,6 @@ while(dummyRead > 0) //bleed sensor to get it ready
        dummyRead --;
 }
 
-LEDobject.Purple();    //set LED purple until the calculation for the module has been completed
 
 for(int z = 0; z < ReadToAvg; z++)
 {
@@ -183,32 +182,64 @@ delay(delayTime);
 LEDobject.ClearColors(); // Clear red LED
 }
 
-void WindMod::sampleBreathRate(MLED& LEDobject){
-/*
+int WindMod::sampleBreathRate(MLED& LEDobject){
+
 LEDobject.White();  //Change the color of the LED
+const int Seconds = 1000;
+const int BufferCount = 2; //points need in a row to be accepted as a breath
 
 int Rate = sampleRate;
 int WindowSize = samepleWindow;
 int ArraySize = sampleTotal;
+
 int Peaks = 0;
+int CurrentBufferAcase = 0;
+int CurrentBufferBcase = 0;
 int i = 0;
 
+bool ThreshBroken = false;
 
 LEDobject.Fade(defaultFadeTime, 3);
+
       while(i < ArraySize){
 
-      this -> DataBuffer[i] = this -> getCurrentMPH();
+      this -> DataBuffer[i] = this -> getCurrentMS();
 
-      delay(sampleRate);
+      delay(Seconds/sampleRate);
+
       i++;
     }
+    LEDobject.Red();
+    delay(1000);
 
-          for(int z = 0; z < sampleTotal; z++)
+      for(int z = 0; z < sampleTotal; z++)
           {
-                    if( )
-                this -> lowThreshold; //need something here to count the times the data crosses the threshold
+                    if( (this -> DataBuffer[z]) >= (this -> lowThreshold ) && !ThreshBroken)
+                    {
+                        CurrentBufferAcase++;
 
-          }*/
+                        if(CurrentBufferAcase >= BufferCount)
+                        {
+                            ThreshBroken = true;
+                            Peaks ++;
+                        }
+                    }
+
+                    else{CurrentBufferAcase = 0;}
+
+                    if( (this -> DataBuffer[z]) < (this -> lowThreshold ) && ThreshBroken)
+                    {
+                        CurrentBufferBcase++;
+
+                        if(CurrentBufferBcase >= BufferCount)
+                        {
+                            ThreshBroken = false;
+                        }
+                    }
+                    else{CurrentBufferBcase = 0;}
+
+          }
+          return Peaks;
 }
 
 void WindMod::EnableMod(){

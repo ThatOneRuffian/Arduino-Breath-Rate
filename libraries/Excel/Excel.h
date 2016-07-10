@@ -49,6 +49,4 @@ class Excel
 };
 
 
-
-
-#endif EXCEL
+#endif

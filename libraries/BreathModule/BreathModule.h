@@ -36,7 +36,7 @@ class WindMod{
 
         void calibrate(MLED&);
 
-        void sampleBreathRate(MLED&);
+        int sampleBreathRate(MLED&);
 
 
 
@@ -51,4 +51,4 @@ class WindMod{
 };
 
 
-#endif BMOD
+#endif
