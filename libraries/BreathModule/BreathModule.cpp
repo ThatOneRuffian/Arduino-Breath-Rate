@@ -29,37 +29,39 @@ this -> EnableMod();
 
 }
 
-double WindMod::getCurrentKPH(){
+float WindMod::getCurrentKPH(){
 
 return this -> getCurrentMPH()*1.60934;
 
 }
 
-double WindMod::getCurrentMS(){
-double KMperMS = 0.27777;
+float WindMod::getCurrentMS(){
+float KMperMS = 0.27777;
 return (this -> getCurrentKPH()*KMperMS);
 }
 
-double WindMod::getCurrentMPH(){
+float WindMod::getCurrentMPH(){
 
-const double zeroWindAdjustment =  .2;
-double RV_Wind_Volts;
-double WindSpeed_MPH;
-double  zeroWind_ADunits;
-double zeroWind_volts;
+const float zeroWindAdjustment =  .2;
+const double constant = 0.0048828125;
+float RV_Wind_Volts;
+float WindSpeed_MPH;
+float zeroWind_ADunits;
+float zeroWind_volts;
 
-double TMP_Therm_ADunits;
+float TMP_Therm_ADunits;
 
-double incoming = 0;
-double pinADC = 0;
+float incoming = 0;
+//double pinADC = 0;
 
      incoming = analogRead(this -> RV);
      TMP_Therm_ADunits = analogRead(this -> TMP);
 
-     RV_Wind_Volts = (incoming *  0.0048828125);
-     zeroWind_ADunits = -0.0006*((double)TMP_Therm_ADunits * (double)TMP_Therm_ADunits) + 1.0727 * (double)TMP_Therm_ADunits + 47.172;
-     zeroWind_volts = (zeroWind_ADunits * 0.0048828125) - zeroWindAdjustment;
+     RV_Wind_Volts = (incoming *  constant);
+     zeroWind_ADunits = -0.0006*((float)TMP_Therm_ADunits * (float)TMP_Therm_ADunits) + 1.0727 * (float)TMP_Therm_ADunits + 47.172;
+     zeroWind_volts = (zeroWind_ADunits * constant) - zeroWindAdjustment;
      WindSpeed_MPH =  pow(((RV_Wind_Volts - zeroWind_volts) /.2300) , 2.7265);
+
 
      return WindSpeed_MPH;
 
@@ -125,7 +127,6 @@ return sqrt(sumDeviation/BufferArraySize);
 void WindMod::calibrate(MLED& LEDobject){
 
 int standardDevs = 2; //threshold set to be x times the standard deviation taken from calibration
-noInterrupts();          //disable Arduino interrupts
 
 const int delayTime = 200; // delay two seconds after disabling mod to turn back on.
 const int analogThresholdLow = 100; // threshold for warm up OK ~0.3v
@@ -156,7 +157,7 @@ analogData = analogRead(this -> OUT);  //refresh value
 
 }
 
-interrupts();         // Enable Interrupts
+
 
 LEDobject.Red();   //Change LED to a solid yellow color
 

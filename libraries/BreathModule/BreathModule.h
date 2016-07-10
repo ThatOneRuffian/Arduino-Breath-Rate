@@ -17,11 +17,11 @@ class WindMod{
         WindMod(int, int, int, int);
 
         /*******kool Kid Functions******/
-        double getCurrentKPH(void);
+        float getCurrentKPH(void);
 
-        double getCurrentMPH(void);
+        float getCurrentMPH(void);
 
-        double getCurrentMS(void);
+        float getCurrentMS(void);
 
         double getTempC(void);
 
