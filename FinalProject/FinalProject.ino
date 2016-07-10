@@ -90,6 +90,26 @@ while( BreathRate < myModule.lowThreshold )  //While the breath rate is below th
 
 if(BreathRate >= myModule.lowThreshold)
 {
+  SampleData();
+  }
+
+  /********* Sample Data - End *********/ 
+
+
+  
+  /********* Calculate Breath length - start  *********/ 
+
+
+  /********* Calculate Breath length - end  *********/ 
+
+  
+}
+
+
+
+}
+void SampleData(){
+  
   myLED.White();   //Change LED color to light blue
   int i = 0;    
   bool breakCount = false; //Count how many times the data has crossed the threshold
@@ -102,7 +122,7 @@ if(BreathRate >= myModule.lowThreshold)
   {
   
    SampleArray[i] = myModule.getCurrentMS();   //Read new value into array
-
+   
     if( SampleArray[i] > myModule.lowThreshold) //If next sample is also above threshold. To reduce noise.
       {
         CycleLogic[0] = true;
@@ -126,21 +146,7 @@ if(BreathRate >= myModule.lowThreshold)
     }
 
     i ++;
-  }
-
-  /********* Sample Data - End *********/ 
-
-
-  
-  /********* Calculate Breath length - start  *********/ 
-
-
-  /********* Calculate Breath length - end  *********/ 
-
-  
-}
-
-
 
 }
+void CalculateBreath
 
