@@ -139,7 +139,6 @@ if (!InvalidInputFlag){
                 Serial.print(",");
             }
 
-
         i++;
         z++;
         }
@@ -148,7 +147,14 @@ if (!InvalidInputFlag){
         this -> Flag = false;
 }
 }
+void Excel::Reset(void){
+this ->ClearData();
+this ->ResetTimer();
+}
+void Excel::ResetTimer(void){
 
+Serial.println("RESETTIMER");
+}
 void Excel::ClearData(void){//Clears data in excel sheet
 
 Serial.println("CLEARDATA");

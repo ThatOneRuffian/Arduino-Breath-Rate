@@ -1,16 +1,11 @@
 #include "BreathModule.h"
 
-#define sampleRate 10    // samples per second
-#define samepleWindow 10  //period of ten seconds
-#define sampleTotal sampleRate*samepleWindow
-
 int WindMod::RV,
     WindMod::TMP,
     WindMod::OUT,
     WindMod::Enable;
 
 double WindMod::defaultFadeTime = 1000.0,    //MLED libraries used.
-       WindMod::DataBuffer[sampleTotal],
        WindMod::lowThreshold;  // This value is set during the calibration function.
 
 WindMod::WindMod(int _rv, int _tmp, int _out, int EnablePin){
@@ -126,121 +121,66 @@ return sqrt(sumDeviation/BufferArraySize);
 
 void WindMod::calibrate(MLED& LEDobject){
 
-int standardDevs = 2; //threshold set to be x times the standard deviation taken from calibration
-
-const int delayTime = 200; // delay two seconds after disabling mod to turn back on.
-const int analogThresholdLow = 100; // threshold for warm up OK ~0.3v
-const int analogThresholdHIGH = 600; // High threshold for unit ~2v
-const int analogThresholdSuperLow = 100;
-const double ReadToAvg = 100;
-int analogData = 0;
-double AverageReadValue = 0;
-int dummyRead = 2000;  //compares to ready value to ensure device pin has been read enough to read correct value
-
-LEDobject.Red();      //Change LED to red color.
-
-this -> DisableMod();  // Turn off module
-
-delay(delayTime);       // wait for module to power down
-
-this -> EnableMod();    // Turn mod back on.
-
-delay(delayTime);       // wait for spike on output pin.
-
-analogData = analogRead(this -> OUT); //read analog value.
-
-while(analogData <= analogThresholdLow || analogData >= analogThresholdHIGH ){ //while the mod is warming up then do cool show.
-
-LEDobject.Fade(this -> defaultFadeTime, 1);  //fade 1 cycle.
-
-analogData = analogRead(this -> OUT);  //refresh value
-
-}
 
 
+    const int delayTime = 200; // delay two seconds after disabling mod to turn back on.
+    const int standardDevs = 5; //threshold set to be x times the standard deviation taken from calibration
+    const int lowOffset = 2;
+    const int analogThresholdLow = 100; // threshold for warm up OK ~0.3v
+    const int analogThresholdHIGH = 600; // High threshold for unit ~2v
+    const int analogThresholdSuperLow = 100;
 
-LEDobject.Red();   //Change LED to a solid yellow color
+    const double ReadToAvg = 100;
 
-while(dummyRead > 0) //bleed sensor to get it ready
-{
-       analogRead(this->OUT);
-       delay(2);
-       dummyRead --;
-}
+    int dummyRead = 2000;  //compares to ready value to ensure device pin has been read enough to read correct value
+    int analogData = 0;
 
+    double AverageReadValue = 0;
 
-for(int z = 0; z < ReadToAvg; z++)
-{
- AverageReadValue += this -> getCurrentMS();
+    LEDobject.Red();      //Change LED to red color.
 
-}//find average of the read values.
-AverageReadValue /= ReadToAvg;
+    this -> DisableMod();  // Turn off module
 
-this -> lowThreshold  = ((this -> getStandardDev())*standardDevs) + AverageReadValue;  // sets lower threshold 5 standard deviations away from base reading.
+    delay(delayTime);       // wait for module to power down
 
-LEDobject.Green();
-delay(delayTime);
-LEDobject.ClearColors(); // Clear red LED
-}
+    this -> EnableMod();    // Turn mod back on.
 
-int WindMod::sampleBreathRate(MLED& LEDobject){
+    delay(delayTime);       // wait for spike on output pin.
 
-LEDobject.White();  //Change the color of the LED
-const int Seconds = 1000;
-const int BufferCount = 2; //points need in a row to be accepted as a breath
+    analogData = analogRead(this -> OUT); //read analog value.
 
-int Rate = sampleRate;
-int WindowSize = samepleWindow;
-int ArraySize = sampleTotal;
+    while(analogData <= analogThresholdLow || analogData >= analogThresholdHIGH ){ //while the mod is warming up then do cool show.
 
-int Peaks = 0;
-int CurrentBufferAcase = 0;
-int CurrentBufferBcase = 0;
-int i = 0;
+        LEDobject.Fade(this -> defaultFadeTime, 1);  //fade 1 cycle.
 
-bool ThreshBroken = false;
+        analogData = analogRead(this -> OUT);  //refresh value
 
-LEDobject.Fade(defaultFadeTime, 3);
-
-      while(i < ArraySize){
-
-      this -> DataBuffer[i] = this -> getCurrentMS();
-
-      delay(Seconds/sampleRate);
-
-      i++;
     }
-    LEDobject.Red();
-    delay(1000);
 
-      for(int z = 0; z < sampleTotal; z++)
-          {
-                    if( (this -> DataBuffer[z]) >= (this -> lowThreshold ) && !ThreshBroken)
-                    {
-                        CurrentBufferAcase++;
 
-                        if(CurrentBufferAcase >= BufferCount)
-                        {
-                            ThreshBroken = true;
-                            Peaks ++;
-                        }
-                    }
 
-                    else{CurrentBufferAcase = 0;}
+    LEDobject.Yellow();   //Change LED to a solid yellow color
 
-                    if( (this -> DataBuffer[z]) < (this -> lowThreshold ) && ThreshBroken)
-                    {
-                        CurrentBufferBcase++;
+    while(dummyRead > 0) //bleed sensor to get it ready
+    {
+        analogRead(this->OUT);
+        delay(2);
+        dummyRead --;
+    }
 
-                        if(CurrentBufferBcase >= BufferCount)
-                        {
-                            ThreshBroken = false;
-                        }
-                    }
-                    else{CurrentBufferBcase = 0;}
+    LEDobject.Purple();
+    for(int z = 0; z < ReadToAvg; z++)
+    {
+        AverageReadValue += this -> getCurrentMS();
 
-          }
-          return Peaks;
+    }//find average of the read values.
+    AverageReadValue /= ReadToAvg;
+
+    this -> lowThreshold  = ((this -> getStandardDev())*standardDevs) + AverageReadValue + lowOffset;  // sets lower threshold 5 standard deviations away from base reading.
+
+    LEDobject.Green();
+    delay(delayTime);
+    LEDobject.ClearColors(); // Clear red LED
 }
 
 void WindMod::EnableMod(){
@@ -252,6 +192,5 @@ digitalWrite(this -> Enable, HIGH);
 void WindMod::DisableMod(){
 
 digitalWrite(this -> Enable, LOW);
-
 
 }

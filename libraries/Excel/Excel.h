@@ -37,6 +37,9 @@ class Excel
             void ClearData(void);    //Clears excel sheet
             void ClearLabels(void);
 
+            void Reset(void);
+
+            void ResetTimer(void);
        private:
             static bool RowWrite;
             static bool Flag;

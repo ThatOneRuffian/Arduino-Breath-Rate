@@ -38,15 +38,8 @@ class WindMod{
 
         int sampleBreathRate(MLED&);
 
-
-
         static double defaultFadeTime;
         static double lowThreshold;
-        static double DataBuffer[];
-
-
-
-
 
 };
 
