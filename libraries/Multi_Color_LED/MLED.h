@@ -31,7 +31,7 @@ class MLED{
 
 
             /*********Misc - Functions*********/
-            void SetBrightness(int&); //Sets the brightness of the LED from 0 - 255
+            void SetBrightness(int); //Sets the brightness of the LED from 0 - 255
             void Fade(double, int);
 
        private:
