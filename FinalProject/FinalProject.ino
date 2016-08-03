@@ -72,7 +72,6 @@ void setup() {
 
      myModule.calibrate(myLED);             //Function to calibrate the breathing module. Updates object threshold. Takes the LED object as input for proper coloring.     
      myLED.White();                         //Set first color
-     myLED.SetBrightness(100);
      myExcelObject.Reset();
 }
 
@@ -102,7 +101,7 @@ void UpdateGraph() //Updates excel graph with breath per minute and new intensit
 {
   if ( GraphUpdateCount <= MaxGraphLength ){
     
-   GraphUpdateCount ++;
+   //GraphUpdateCount ++;
    
    myExcelObject.Data[BreathPerMin] =   BPMtemp;
    myExcelObject.Data[WindSpeed] =      myModule.getCurrentMS();
@@ -171,7 +170,7 @@ void SampleData(){  //Load array with data at defined rate. Checks for breath cy
 void checkRate()
 {
 
-  if (BreathingCycleInProgress) //if buffer overflow aka still think there is a breath in progress.
+  if (BreathingCycleInProgress) //if buffer overflow
   {
     myLED.Red();  //set color to red
 
@@ -192,15 +191,15 @@ void checkRate()
 
 void selectColor()
 {
-  
   int range1[2] = { 0 , 6},  // low - red
       range2[2] = {7 , 11},  // medium - yellow
       range3[2] = {12, 20},  //normal - green
-      range4[2] = { 21, 30}; // high - blue
+      range4[1] = { 21}; // high - blue
   
    if (BPMtemp >= range1[0] && BPMtemp <= range1[1] ) 
    {
     myLED.Red(); 
+    
    }
 
    else if (BPMtemp >= range2[0] && BPMtemp <= range2[1] ) 
@@ -213,7 +212,7 @@ void selectColor()
     myLED.Green(); 
    }
 
-   else if (BPMtemp >= range4[0] && BPMtemp <= range4[1] ) 
+   else if (BPMtemp >= range4[0]) 
    {
     myLED.Blue(); 
    }

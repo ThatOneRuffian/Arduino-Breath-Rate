@@ -123,8 +123,6 @@ void WindMod::calibrate(MLED& LEDobject){
 
 
 
-
-
     const int delayTime = 200; // delay two seconds after disabling mod to turn back on.
     const int standardDevs = 5; //threshold set to be x times the standard deviation taken from calibration
     const int lowOffset = 2;
@@ -135,17 +133,11 @@ void WindMod::calibrate(MLED& LEDobject){
     const double ReadToAvg = 100;
 
     int dummyRead = 2000;  //compares to ready value to ensure device pin has been read enough to read correct value
-    int IncrementCount = 0;
-    const int MaxAnalogWrite = 255;
-    const int halfValue = dummyRead/2;
-    const int stepSize = halfValue/MaxAnalogWrite;
-    bool fadeToggle = true;
-
     int analogData = 0;
 
     double AverageReadValue = 0;
 
-    LEDobject.Red();      //Warm up indication color
+    LEDobject.Red();      //Change LED to red color.
 
     this -> DisableMod();  // Turn off module
 
@@ -153,7 +145,7 @@ void WindMod::calibrate(MLED& LEDobject){
 
     this -> EnableMod();    // Turn mod back on.
 
-    delay(delayTime);       // wait for voltage spike on output pin.
+    delay(delayTime);       // wait for spike on output pin.
 
     analogData = analogRead(this -> OUT); //read analog value.
 
@@ -165,38 +157,16 @@ void WindMod::calibrate(MLED& LEDobject){
 
     }
 
-    LEDobject.Yellow();   //Change LED to a solid yellow color
 
+
+    LEDobject.Yellow();   //Change LED to a solid yellow color
 
     while(dummyRead > 0) //bleed sensor to get it ready
     {
-
         analogRead(this->OUT);
-
-
-         if (IncrementCount <= halfValue && fadeToggle)
-             {
-               LEDobject.SetBrightness(stepSize*IncrementCount);
-               IncrementCount ++;
-               delay(2);
-
-             }
-
-         else
-             {
-               LEDobject.SetBrightness(stepSize*IncrementCount);
-               IncrementCount --;
-
-               fadeToggle = false;
-               delay(2);
-
-             }
-                 dummyRead --;
-
-
-
+        delay(2);
+        dummyRead --;
     }
-    LEDobject.SetBrightness(255); //restore to max brightness
 
     LEDobject.Purple();
     for(int z = 0; z < ReadToAvg; z++)

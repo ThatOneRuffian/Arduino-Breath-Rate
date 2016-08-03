@@ -66,7 +66,7 @@ void MLED::Fade(double fadeTime, int fadeCycles){
 
 }
 
-void MLED::SetBrightness(int Val){  //Not compatible with fade function.
+void MLED::SetBrightness(int& Val){  //Not compatible with fade function.
 
 
 
